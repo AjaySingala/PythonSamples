@@ -1,4 +1,4 @@
-# play.py
+# user.py
 import avro.schema
 from avro.datafile import DataFileReader, DataFileWriter
 from avro.io import DatumReader, DatumWriter

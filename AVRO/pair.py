@@ -1,4 +1,4 @@
-# AvroReadWrite.py
+# pair.py
 # Importing required packages For file Read & Write 
 import avro.schema
 from avro.datafile import DataFileReader, DataFileWriter  

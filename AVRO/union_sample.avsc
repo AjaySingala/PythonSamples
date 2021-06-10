@@ -1,0 +1,11 @@
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "Log",
+ "fields": [
+     {"name": "ip", "type": "string"},
+     {"name": "timestamp",  "type": "string"},
+     {"name": "message", "type": "string"},
+     {"name": "microseconds", "type": ["long", "null"]},
+     {"name": "thread", "type": ["string", "null"]}
+ ]
+}
