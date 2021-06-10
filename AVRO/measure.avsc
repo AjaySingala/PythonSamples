@@ -1,0 +1,26 @@
+{
+    "type": "record",
+    "name": "NifiHeartBeat_v3",
+    "fields": [
+        {
+            "name": "MeasureId",
+            "type": "string",
+            "default": "null"
+        },
+        {
+            "name": "Value",
+            "type": "string",
+            "default": "null"
+        },
+        {
+            "name": "AuditDateTime",
+            "type": "string",
+            "default": "null"
+        },
+        {
+            "name": "DATA_SOURCE",
+            "type": "string",
+            "default": "null"
+        }
+    ]
+}

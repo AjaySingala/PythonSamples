@@ -1,0 +1,9 @@
+{"namespace" : "example.avro",
+ "type": "record",
+ "name": "Pair",
+ "doc": "A pair of strings.",
+ "fields": [
+            {"name": "first", "type": "string"},
+            {"name": "second", "type": "string"}
+           ]
+}
