@@ -1,0 +1,23 @@
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10:2.12 s.py
+
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview2 s.py
+
+spark-submit --deploy-mode cluster --class org.apache.spark.examples.SparkPi /usr/lib/spark/examples/jars/spark-examples.jar 10
+
+S3:
+arn:aws:s3:::ajs-emr
+https://ajs-emr.s3.ap-south-1.amazonaws.com/
+s3://ajs-emr.s3.ap-south-1.amazonaws.com/
+s3://ajs-emr.s3/
+s3://ajs-emr/health_violations.py
+s3://ajs-emr/food_establishment_data.csv
+s3://ajs-emr.s3/logs
+
+--class com.jeanr84.sparkjob.SparkJob 
+s3://ajs-emr/wordcount.scala 
+s3://ajs-emr/TheNotebooksofLeonardoDaVinci.txt 
+s3://ajs-emr/output
+
+spark-submit --deploy-mode cluster --class com.jeanr84.sparkjob.SparkJob s3://ajs-emr/TheNotebooksofLeonardoDaVinci.txt  s3://ajs-emr/output
+spark-submit --deploy-mode cluster --class org.apache.spark.examples.SparkPi /usr/lib/spark/examples/jars/spark-examples.jar 10
+
