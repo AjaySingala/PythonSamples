@@ -1,3 +1,9 @@
+#Use these combos to test:
+#[5,4,2,1,4,5]
+#[10,7, 5, 3, 6, 8]
+#[10,6,4,2,5,3]
+#[7, 9, 6, 1, 3, 5]
+
 import ast,sys
 input_str = sys.stdin.read()
 sides = ast.literal_eval(input_str)#list of side lengths
