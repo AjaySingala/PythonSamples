@@ -51,12 +51,12 @@
 # eng2gr.clear()
 # print(eng2gr)
 
-# Some other methods for dictionaries.
-fruits = {}.fromkeys(['Orange','Apple','Banana'], 0)
-print(fruits)
+# # Some other methods for dictionaries.
+# fruits = {}.fromkeys(['Orange','Apple','Banana'], 0)
+# print(fruits)
 
-for item in fruits.items():
-    print(item)
+# for item in fruits.items():
+#     print(item)
 
-print(list(sorted(fruits.keys())))
+# print(list(sorted(fruits.keys())))
 
