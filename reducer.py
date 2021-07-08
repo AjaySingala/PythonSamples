@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 """reducer.py"""
+# execute as:
+# echo "is there any way, any way, we could make this work? Is there?" | python mapper.py | python reducer.py
+# cat .\for_map_reduce.txt | python mapper.py | python reducer.py
+# cat .\loren_ipsum.txt | python mapper.py | python reducer.py
+
 from operator import itemgetter
 import sys
 
@@ -13,7 +18,7 @@ for line in sys.stdin:
     line = line.strip()
 
     # parse the input we got from mapper.py
-    word, count = line.split('\t', 1)
+    word, count = line.split(' ', 1)
 
     # convert count (currently a string) to int
     try:
