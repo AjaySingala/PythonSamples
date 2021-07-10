@@ -14,4 +14,4 @@ def test_collatz_1():
     assert next_collatz_element(1) == 4
 
 def test_collatz_2():
-    assert next_collatz_element(1) == 4
+    assert next_collatz_element(5) == 15
