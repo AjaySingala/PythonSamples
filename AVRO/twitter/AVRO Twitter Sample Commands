@@ -1,0 +1,48 @@
+hfds dfs -mkdir examples/input/
+hfds dfs -mkdir examples/input/
+hfds dfs -mkdir examples/schema/
+
+hfds dfs -copyFromLocal ./twitter.avro examples/input/
+hfds dfs -copyFromLocal ./twitter.avsc examples/schema/
+
+hadoop jar hadoop-streaming-2.0.0-mr1-cdh4.3.0.jar \
+    -D mapred.job.name="avro-streaming" \
+    -D mapred.reduce.tasks=0 \
+    -files avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -libjars avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -input  examples/input/ \
+    -output streaming/output/ \
+    -mapper org.apache.hadoop.mapred.lib.IdentityMapper \
+    -inputformat org.apache.avro.mapred.AvroAsTextInputFormat
+
+hadoop fs -cat streaming/output/part-00000 | head -4
+
+hadoop jar hadoop-streaming-2.0.0-mr1-cdh4.3.0.jar \
+    -D mapred.job.name="avro-streaming" \
+    -D mapred.reduce.tasks=0 \
+    -files avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -libjars avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -input  examples/input/ \
+    -output streaming/output2/ \
+    -mapper org.apache.hadoop.mapred.lib.IdentityMapper \
+    -inputformat org.apache.avro.mapred.AvroAsTextInputFormat \
+    -outputformat org.apache.avro.mapred.AvroTextOutputFormat
+	
+$ hadoop fs -copyToLocal streaming/output2/part-00000.avro .
+$ java -jar avro-tools-1.7.6.jar tojson part-00000.avro  | head -4
+
+hdfs dfs -rm -r streaming/*
+hdfs dfs -rm -r streaming
+
+hadoop jar hadoop-streaming-2.0.0-mr1-cdh4.3.0.jar \
+    -D mapred.job.name="avro-streaming" \
+    -files avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -libjars avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -input  examples/input/ \
+    -output streaming/output/ \
+	-files ./mapper.py \
+    -mapper ./mapper.py \
+	-files ./reducer.py \
+    -reducer ./reducer.py \
+    -inputformat org.apache.avro.mapred.AvroAsTextInputFormat \
+    -outputformat org.apache.avro.mapred.AvroTextOutputFormat
