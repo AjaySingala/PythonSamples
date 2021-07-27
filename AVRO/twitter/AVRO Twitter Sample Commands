@@ -36,13 +36,13 @@ hdfs dfs -rm -r streaming
 
 hadoop jar hadoop-streaming-2.0.0-mr1-cdh4.3.0.jar \
     -D mapred.job.name="avro-streaming" \
-    -files avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
+    -files avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar\
     -libjars avro-1.7.6.jar,avro-mapred-1.7.6-hadoop1.jar \
     -input  examples/input/ \
     -output streaming/output/ \
-	-files ./mapper.py \
-    -mapper ./mapper.py \
-	-files ./reducer.py \
-    -reducer ./reducer.py \
+	-file /home/maria_dev/PythonSamples/mapper.py \
+    -mapper /home/maria_dev/PythonSamples/mapper.py \
+	-file /home/maria_dev/PythonSamples/reducer.py \
+	-reducer /home/maria_dev/PythonSamples/reducer.py \
     -inputformat org.apache.avro.mapred.AvroAsTextInputFormat \
     -outputformat org.apache.avro.mapred.AvroTextOutputFormat
