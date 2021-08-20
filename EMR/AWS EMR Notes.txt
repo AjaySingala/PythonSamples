@@ -4,20 +4,220 @@ spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0-preview
 
 spark-submit --deploy-mode cluster --class org.apache.spark.examples.SparkPi /usr/lib/spark/examples/jars/spark-examples.jar 10
 
-S3:
-arn:aws:s3:::ajs-emr
-https://ajs-emr.s3.ap-south-1.amazonaws.com/
-s3://ajs-emr.s3.ap-south-1.amazonaws.com/
-s3://ajs-emr.s3/
-s3://ajs-emr/health_violations.py
-s3://ajs-emr/food_establishment_data.csv
-s3://ajs-emr.s3/logs
+spark-submit --deploy-mode cluster s3://ajs-python/health_violations.py --data_source s3://ajs-python/food_establishment_data.csv --output_uri s3://ajs-output
 
---class com.jeanr84.sparkjob.SparkJob 
-s3://ajs-emr/wordcount.scala 
-s3://ajs-emr/TheNotebooksofLeonardoDaVinci.txt 
-s3://ajs-emr/output
+Spark Driver and Executor
+	Driver:
+		Java process
+		main() of Java, Python, Scala executed.
+		Execute user code
+		Creates Sparksession, SparkContext
+			Sparksession:
+				create dataframes, rdds, execute SQL, perform Transformations & Actions.
+		Converts the user code into "Tasks" (Transformations & Actions)
+			with the help of "Lineage"
+				You -> Parents -> Grand Parents -> Great Grandparents
+				Spark Lineage: rdd1 -> rdd2 -> rdd3
+				Spark RDD contains a pointer to its parent RDD
+				Logical Plan and Physical Plan
+				Once Physical Plan created, drive will schedule the tasks execution via the Cluster Manager
+	Executor:
+		resides on the Worker Node
+		are launched when the Spark Application starts
+		And they coordinate with the Cluster Manager
+		dynamically launched and removed by the Driver.
+		to run an individual task
+		return the result back to the driver
+		It can persist (in cache) data on the Worker Node (in-memory)
+	Cluster Manager:
+		responsible for actually launching the executors and driver.
+		spark-submit initiates the cluster manager
+			you can decide on the no. of executors to launch for the program, CPU, memory etc. per Executor.
+			
+		spark-submit -master <spark master url> -executor-memory 2g -executor-cores 4 whatever.py
+		sparkContext.stop()
+			releases all the resources from the cluster.
+
+How to configure Executors?:
+	spark-defaults.conf
+		spark.executor.instances 4
+		
+	In code using SparkConf:
+		#1
+		spark.conf.set("spark.executor.instances", 4)
+		spark.conf.set("spark.executor.cores", 4)
+	
+		#2:
+		SparkConf conf = new SparkConf()
+			.set("spark.executor.instances", 3)
+			.set("spark.executor.cores", 5)
+			
+	spark-submit 
+		--master <master url>
+		--deploy-mode cluster
+		--driver-memory 8g
+		--executor-memory 16g
+		--executor-cores 2
+		--num-executors 4
+		--class org.apache.spark.examples.SparkPi /usr/lib/spark/examples/jars/spark-examples.jar 10
+		
+Configuring Driver Class
+	(Driver Class Configuration)
+	cluster mode:
+		spark-defaults.conf:
+			spark.driver.extraClassPath /usr/lib/spark/libraries
+
+		In code using SparkConf:
+			#1
+			spark.conf.set("spark.driver.extraClassPath", "/usr/lib/spark/libraries")
+		
+			#2:
+			SparkConf conf = new SparkConf()
+				.set("spark.driver.extraClassPath", "/usr/lib/spark/libraries")
+
+	client mode:
+		spark-defaults.conf:
+			spark.driver.extraClassPath /usr/lib/spark/libraries
+
+		spark-submit 
+			--master <master url>
+			--deploy-mode cluster
+			--driver-memory 8g
+			--executor-memory 16g
+			--executor-cores 2
+			--num-executors 4
+			--driver-class-path /usr/lib/spark/libraries
+			--class org.apache.spark.examples.SparkPi 10
+Spark Caching:
+	RDD Persistence & Caching
+	rdd.cache()
+		store the RDD in-memory
+	rdd.persist()
+		efficiently available across parallel nodes / executors
+	BOTH use MEMORY ONLY storage
+	Persistence Storage Levels => rdd.persist():
+		MEMORY_ONLY (default):
+			RDD is a deserialized JVM object and stored in-memory.
+			storage space is very High
+			CPU computation time is low
+			data is stored in-memory.
+		MEMORY_AND_DISK
+			RDD is a deserialized JVM object.
+			When the size of the RDD increases more than the available memory, it stores the excess partition on disk.
+			And retrieve from disk as and when required.
+			storage space is very high
+			CPU computation is medium
+			data is stored in-memory and on disk.
+		MEMORY_ONLY_SER
+			RDD is a serialized JVM object.
+			More space efficient.
+			storage space is low.
+			CPU computation is high
+			data is stored in-memory.
+		MEMORY_AND_DISK_SER
+			RDD is a serialized JVM object.
+			More space efficient.
+			When the size of the RDD increases more than the available memory, it stores the excess partition on disk.
+			And retrieve from disk as and when required.
+			storage space is very low
+			CPU computation is high
+			data is stored in-memory and on disk.
+		DISK_ONLY
+			RDD is stored only on disk.
+			storage is low
+			CPU computation time is high
+			data is stored on disk only.
+	Benefits of RDD Persistence:
+		Time efficient
+		Cost efficient
+		Less time for execution
+	How do you unpersist?
+		rdd.unpersist() - forceful removal from cache
+		LRU algorithm - Least Recently Used
+			less frequently used data is removed from cache by Spark.
+		
+		
+Infrastructure-As-A-Service: IaaS Examples And Definitions (Iaas)
+Definition: IaaS is the utilization of APIs to manage the lowest levels of network infrastructure, including networking, storage, servers, and virtualization. 
+
+Examples: Rackspace, Digital Ocean, Google Compute Engine, and some deployments of Microsoft Azure and Amazon Web Services (AWS)
+
+Compute Services: AWS EC2, Azure Compute, Google Compute Engine
+
+Common Use Cases: IaaS is the most flexible service model for cloud computing, so it is especially effective for startups and organizations looking for agile scaling. It is also preferred by businesses that seek greater control over their resources.
+
+Platform-As-A-Service: PaaS Examples And Definitions (Paas)
+Definition: PaaS offers an even greater abstraction of cloud service, offering users the capability to build or deploy applications using tools (i.e. programming languages, libraries, services) without maintaining the underlying infrastructure. Users instead have control over the applications themselves. 
+
+Examples: Salesforce, AWS Elastic Beanstalk, Heroku, Google App Engine (GAE), and OpenShift
+
+Common Use Cases: PaaS is highly available and highly scalable, and it gives organizations the ability to build and create new services and solutions without the need for highly skilled developers focused on software maintenance. PaaS is preferred by IT in hybrid cloud environments. 
+
+Software-As-A-Service: SaaS Examples And Definitions (Saas)
+Definition: SaaS enables users to use and access the cloud provider’s applications that are running on the provider’s infrastructure from thin client or program interfaces. 
+
+Examples: There are loads: Google G-Suite, Dropbox, Cisco Webex, Concur, Microsoft O365, Genesys, PayPal
+
+Common Use Cases: SaaS is a comfortable service model for applications that are highly interoperable – used by multiple users internally and externally – and for short-term projects. SaaS models are preferred by
+ small and medium-sized businesses that do not wish to invest heavily in IT maintenance. 
+
+IaaS
+PaaS
+SaaS
+DBaaS
+IaaS
+
+ 
+What is EC2? Elastic Compute Cloud
+What is S3? Simple Storage Service
+EMR Launch modes:
+	Cluster
+	step execution
+
+It is possible to launch an EMR cluster using micro size instances?: No
+
+It is possible to launch a cluster of just Worker Nodes in EMR?: No
+
+It is possible to launch a single node cluster in EMR: Yes
+
+What is the SSH command syntax use to connect to an EMR cluster?
+	ssh -i privateKeyPath.pem hadoop@emr-dns
+
+You can copy files from local to the EMR node and vice versa:
+	SCP client (Secure Copy Protocol)
+	
+	copy from local to cluster:
+		scp -i <path of .pem> <local path> <username@dns:target_path>
+		scp -i C:\myemr\mykey.pem myfile.txt hadoop@ec2-3-108-3-46.ap-south-1.compute.amazonaws.com:/home/maria_dev/samples
+		
+	copy from cluster to local:
+		scp -i <path of .pem> <username@dns:target_path> <local path> 
+		scp -i C:\myemr\mykey.pem hadoop@ec2-3-108-3-46.ap-south-1.compute.amazonaws.com:/home/maria_dev/samples/myfile.txt myfile.txt 
+
+On Hortonworks VM:
+Transfer file from local machine to sandbox:
+	scp -P 2222 <local_directory_file> root@sandbox-hdp.hortonworks.com:<sandbox_directory_file>
+Transfer file from sandbox to local machine:
+	scp -P 2222 root@sandbox-hdp.hortonworks.com:<sandbox_directory_file> <local_directory_file>
+
 
 spark-submit --deploy-mode cluster --class com.jeanr84.sparkjob.SparkJob s3://ajs-emr/TheNotebooksofLeonardoDaVinci.txt  s3://ajs-emr/output
 spark-submit --deploy-mode cluster --class org.apache.spark.examples.SparkPi /usr/lib/spark/examples/jars/spark-examples.jar 10
 
+# Using an external MySQL database or Amazon Aurora.
+# class driver config.
+hiveConfiguration.json:
+[
+    {
+      "Classification": "hive-site",
+      "Properties": {
+        "javax.jdo.option.ConnectionURL": "jdbc:mysql://hostname:3306/hive?createDatabaseIfNotExist=true",
+        "javax.jdo.option.ConnectionDriverName": "org.mariadb.jdbc.Driver",
+        "javax.jdo.option.ConnectionUserName": "username",
+        "javax.jdo.option.ConnectionPassword": "password"
+      }
+    }
+]
+
+aws emr create-cluster --release-label emr-5.33.0 --instance-type m5.xlarge --instance-count 2 \
+--applications Name=Hive --configurations file://hiveConfiguration.json --use-default-roles
