@@ -1,8 +1,30 @@
+# read_csv.py
 import csv
 
-with open('file.csv') as f:
+filename = 'C:\\temp\\finance_header.csv'
+with open(filename) as f:
+    print(type(f))
     reader = csv.reader(f)
     data = list(reader)
 
 print(data)
 
+# Use csv.reader()
+file = open(filename)
+csvreader = csv.reader(file)
+
+# Extract field names.
+header = []
+header = next(csvreader)
+print("Header: ", header)
+
+# Extract the rows.
+print("The rows...")
+rows = []
+for row in csvreader:
+    rows.append(row)
+    print(row)
+print("All rows...")
+print(rows)
+
+file.close()
