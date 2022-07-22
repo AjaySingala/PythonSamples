@@ -2,12 +2,14 @@
 import csv
 
 filename = 'C:\\temp\\finance_header.csv'
-with open(filename) as f:
-    print(type(f))
-    reader = csv.reader(f)
-    data = list(reader)
+# with open(filename) as f:
+#     print(type(f))
+#     reader = csv.reader(f)
+#     print(type(reader))
+#     data = list(reader)
+#     print(type(data))
 
-print(data)
+# print(data)
 
 # Use csv.reader()
 file = open(filename)
