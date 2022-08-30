@@ -36,4 +36,21 @@ import re
 # x = re.sub("\s", "9", txt, 2)
 # print(x)
 
+# def find_capitals(s):
+#     result = re.findall('[A-Z]\w+', s)
+#     #result = re.findall('[A-Z][A-z]+', s)
+#     for i in result:
+#         print(i)
 
+# find_capitals("Jacob and Ajay work for Revature W0rd")
+
+
+# def findallEmail():
+#     with open('emails.txt', 'r') as file:
+#         readfile = file.read()
+#         result = re.findall('[\w.]+@[\w.]+.[\w]+', readfile)
+#         # result = re.findall("(\w[.\w]*@[a-zA-Z0-9-.]+\.\w+)",readfile)
+#         for i in result:
+#             print(i)
+
+# findallEmail()
